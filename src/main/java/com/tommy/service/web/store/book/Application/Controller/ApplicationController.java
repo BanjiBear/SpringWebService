@@ -6,6 +6,7 @@ import java.util.HashMap;
 // Spring dependencies
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +30,7 @@ public class ApplicationController{
     }
 	
 	@GetMapping("/books")
-	public ArrayList<BookInformation> getBooks(
+	public ArrayList<Object> getBooks(
 			@RequestParam(name = "type", defaultValue = "") String type,
 			@RequestParam(name = "query", defaultValue = "") String query){
 		
@@ -45,7 +46,7 @@ public class ApplicationController{
 		return logicProcessor.getBooks(logicProcessor.getQuery(), logicProcessor.getStorageReader().getStorage());
 	}
 	
-	@GetMapping("/book")
+	/*@GetMapping("/book")
 	public ArrayList<BookInformation> getOnlyMatchedBooks(
 			@RequestParam(required = true, name = "type") String type,
 			@RequestParam(required = true, name = "query") String query){
@@ -60,15 +61,15 @@ public class ApplicationController{
 		((AnnotationConfigApplicationContext)context).close();
 		
 		return logicProcessor.getOnlyMatchedBooks(logicProcessor.getQuery(), logicProcessor.getStorageReader().getStorage());
-	}
+	}*/
 	
-	@PostMapping("/create")
-	public HashMap<String, BookInformation> postNewBook(@RequestBody BookInformation newBookInformation){
+	@PostMapping("/books")
+	public ArrayList<Object> postNewBook(@RequestBody BookInformation newBookInformation){
 		ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		//((AnnotationConfigApplicationContext) context).refresh();
 		LogicProcessor logicProcessor = (LogicProcessor) context.getBean(LogicProcessor.class);
 		
-		logicProcessor.setNewBook(new String[] {newBookInformation.getBookName(), newBookInformation.getAuthor(), newBookInformation.getISBN(), newBookInformation.getPrice(), newBookInformation.getPublishDate()});
+		logicProcessor.setNewBook(new String[] {newBookInformation.getBook_name(), newBookInformation.getAuthor(), newBookInformation.getISBN(), newBookInformation.getPrice(), newBookInformation.getPublish_date()});
 		logicProcessor.getStorageReader().setStorage();
 		((AnnotationConfigApplicationContext)context).close();
 		
@@ -88,17 +89,32 @@ public class ApplicationController{
 		return logicProcessor.postNewBook(logicProcessor.getNewBook(), logicProcessor.getStorageReader().getStorage());
 	}
 	
-	@PutMapping("/book/update")
-	public HashMap<String, BookInformation> putNewBookInfo(@RequestBody BookInformation modefiedBookInformation, @RequestParam(required = true, name = "isbn") String isbn){
+	@PutMapping("/books/{isbn}")
+	public ArrayList<Object> putNewBookInfo(
+			@RequestBody BookInformation modefiedBookInformation, 
+			@PathVariable(name = "isbn") String isbn){
 		ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		//((AnnotationConfigApplicationContext) context).refresh();
 		LogicProcessor logicProcessor = (LogicProcessor) context.getBean(LogicProcessor.class);
 		
 		logicProcessor.setQuery(isbn);
-		logicProcessor.setNewBook(new String[] {modefiedBookInformation.getBookName(), modefiedBookInformation.getAuthor(), modefiedBookInformation.getISBN(), modefiedBookInformation.getPrice(), modefiedBookInformation.getPublishDate()});
+		logicProcessor.setNewBook(new String[] {modefiedBookInformation.getBook_name(), modefiedBookInformation.getAuthor(), modefiedBookInformation.getISBN(), modefiedBookInformation.getPrice(), modefiedBookInformation.getPublish_date()});
 		logicProcessor.getStorageReader().setStorage();
 		((AnnotationConfigApplicationContext)context).close();
 		
 		return logicProcessor.putNewBookInfo(logicProcessor.getQuery(), logicProcessor.getNewBook(), logicProcessor.getStorageReader().getStorage());
+	}
+	
+	@DeleteMapping("/books/{isbn}")
+	public ArrayList<Object> deleteBook(@PathVariable String isbn){
+		ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+		//((AnnotationConfigApplicationContext) context).refresh();
+		LogicProcessor logicProcessor = (LogicProcessor) context.getBean(LogicProcessor.class);
+		
+		logicProcessor.setQuery("-"+isbn+"-");
+		logicProcessor.getStorageReader().setStorage();
+		((AnnotationConfigApplicationContext)context).close();
+		
+		return logicProcessor.deleteBook(logicProcessor.getQuery(), logicProcessor.getStorageReader().getStorage());
 	}
 }
