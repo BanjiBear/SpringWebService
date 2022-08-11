@@ -30,20 +30,20 @@ public class ApplicationController{
     }
 	
 	@GetMapping("/books")
-	public ArrayList<Object> getBooks(
+	public ResponseFactory getBooks(
 			@RequestParam(name = "type", defaultValue = "") String type,
 			@RequestParam(name = "query", defaultValue = "") String query){
 		
 		ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		//((AnnotationConfigApplicationContext) context).refresh();
-		LogicProcessor logicProcessor = (LogicProcessor) context.getBean(LogicProcessor.class);
+		RequestProcessor requestProcessor = (RequestProcessor) context.getBean(RequestProcessor.class);
 		
-		logicProcessor.setType(type); //System.out.println(bookQuery.getType());
-		logicProcessor.setQuery(query); //System.out.println(bookQuery.getQuery());
-		logicProcessor.getStorageReader().setStorage();
+		requestProcessor.setType(type); //System.out.println(bookQuery.getType());
+		requestProcessor.setQuery(query); //System.out.println(bookQuery.getQuery());
+		requestProcessor.getStorageReader().setStorage();
 		((AnnotationConfigApplicationContext)context).close();
 		
-		return logicProcessor.getBooks(logicProcessor.getQuery(), logicProcessor.getStorageReader().getStorage());
+		return requestProcessor.getBooks(requestProcessor.getQuery(), requestProcessor.getStorageReader().getStorage());
 	}
 	
 	/*@GetMapping("/book")
@@ -53,24 +53,24 @@ public class ApplicationController{
 		
 		ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		//((AnnotationConfigApplicationContext) context).refresh();
-		LogicProcessor logicProcessor = (LogicProcessor) context.getBean(LogicProcessor.class);
+		requestProcessor requestProcessor = (requestProcessor) context.getBean(requestProcessor.class);
 		
-		logicProcessor.setType(type);
-		logicProcessor.setQuery(query);
-		logicProcessor.getStorageReader().setStorage();
+		requestProcessor.setType(type);
+		requestProcessor.setQuery(query);
+		requestProcessor.getStorageReader().setStorage();
 		((AnnotationConfigApplicationContext)context).close();
 		
-		return logicProcessor.getOnlyMatchedBooks(logicProcessor.getQuery(), logicProcessor.getStorageReader().getStorage());
+		return requestProcessor.getOnlyMatchedBooks(requestProcessor.getQuery(), requestProcessor.getStorageReader().getStorage());
 	}*/
 	
 	@PostMapping("/books")
-	public ArrayList<Object> postNewBook(@RequestBody BookInformation newBookInformation){
+	public ResponseFactory postNewBook(@RequestBody BookInformation newBookInformation){
 		ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		//((AnnotationConfigApplicationContext) context).refresh();
-		LogicProcessor logicProcessor = (LogicProcessor) context.getBean(LogicProcessor.class);
+		RequestProcessor requestProcessor = (RequestProcessor) context.getBean(RequestProcessor.class);
 		
-		logicProcessor.setNewBook(new String[] {newBookInformation.getBook_name(), newBookInformation.getAuthor(), newBookInformation.getISBN(), newBookInformation.getPrice(), newBookInformation.getPublish_date()});
-		logicProcessor.getStorageReader().setStorage();
+		requestProcessor.setNewBook(new String[] {newBookInformation.getBook_name(), newBookInformation.getAuthor(), newBookInformation.getISBN(), newBookInformation.getPrice(), newBookInformation.getPublish_date()});
+		requestProcessor.getStorageReader().setStorage();
 		((AnnotationConfigApplicationContext)context).close();
 		
 		/*
@@ -86,35 +86,35 @@ public class ApplicationController{
 		 * 	}"
 		 */
 		
-		return logicProcessor.postNewBook(logicProcessor.getNewBook(), logicProcessor.getStorageReader().getStorage());
+		return requestProcessor.postNewBook(requestProcessor.getNewBook(), requestProcessor.getStorageReader().getStorage());
 	}
 	
 	@PutMapping("/books/{isbn}")
-	public ArrayList<Object> putNewBookInfo(
+	public ResponseFactory putNewBookInfo(
 			@RequestBody BookInformation modefiedBookInformation, 
 			@PathVariable(name = "isbn") String isbn){
 		ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		//((AnnotationConfigApplicationContext) context).refresh();
-		LogicProcessor logicProcessor = (LogicProcessor) context.getBean(LogicProcessor.class);
+		RequestProcessor requestProcessor = (RequestProcessor) context.getBean(RequestProcessor.class);
 		
-		logicProcessor.setQuery(isbn);
-		logicProcessor.setNewBook(new String[] {modefiedBookInformation.getBook_name(), modefiedBookInformation.getAuthor(), modefiedBookInformation.getISBN(), modefiedBookInformation.getPrice(), modefiedBookInformation.getPublish_date()});
-		logicProcessor.getStorageReader().setStorage();
+		requestProcessor.setQuery(isbn);
+		requestProcessor.setNewBook(new String[] {modefiedBookInformation.getBook_name(), modefiedBookInformation.getAuthor(), modefiedBookInformation.getISBN(), modefiedBookInformation.getPrice(), modefiedBookInformation.getPublish_date()});
+		requestProcessor.getStorageReader().setStorage();
 		((AnnotationConfigApplicationContext)context).close();
 		
-		return logicProcessor.putNewBookInfo(logicProcessor.getQuery(), logicProcessor.getNewBook(), logicProcessor.getStorageReader().getStorage());
+		return requestProcessor.putNewBookInfo(requestProcessor.getQuery(), requestProcessor.getNewBook(), requestProcessor.getStorageReader().getStorage());
 	}
 	
 	@DeleteMapping("/books/{isbn}")
-	public ArrayList<Object> deleteBook(@PathVariable String isbn){
+	public ResponseFactory deleteBook(@PathVariable String isbn){
 		ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		//((AnnotationConfigApplicationContext) context).refresh();
-		LogicProcessor logicProcessor = (LogicProcessor) context.getBean(LogicProcessor.class);
+		RequestProcessor requestProcessor = (RequestProcessor) context.getBean(RequestProcessor.class);
 		
-		logicProcessor.setQuery("-"+isbn+"-");
-		logicProcessor.getStorageReader().setStorage();
+		requestProcessor.setQuery("-"+isbn+"-");
+		requestProcessor.getStorageReader().setStorage();
 		((AnnotationConfigApplicationContext)context).close();
 		
-		return logicProcessor.deleteBook(logicProcessor.getQuery(), logicProcessor.getStorageReader().getStorage());
+		return requestProcessor.deleteBook(requestProcessor.getQuery(), requestProcessor.getStorageReader().getStorage());
 	}
 }
